@@ -1,3 +1,4 @@
+import Features from "@/components/Features";
 import Hero from "@/components/Hero";
 import InvoiceCTA from "@/components/InvoiceCTA";
 // import InvoiceCTA from "@/components/invoiceCTA";
@@ -11,6 +12,7 @@ export default function Home() {
       <Steps />
       <InvoiceCTA />
       <Steps />
+      <Features />
     </main>
   );
 }
