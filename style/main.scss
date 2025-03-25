@@ -4,3 +4,11 @@ body {
   position: relative;
   min-height: 100 vh;
 }
+
+.invoice-cta {
+  height: 100vh;
+  // background: url("/images/invoice-template.png");
+  // background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
