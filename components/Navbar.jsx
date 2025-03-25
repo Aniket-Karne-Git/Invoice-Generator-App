@@ -17,7 +17,7 @@ const Navbar = () => {
         <Link href="/login">Log in</Link>
         <ThemeLink
           href="/register"
-          className="bg-red-500 hover:bg-red-600 focus:ring-red-300"
+          className="bg-rose-500 text hover:bg-rose-600 focus:ring-rose-300"
           title="Register"
         />
       </div>
