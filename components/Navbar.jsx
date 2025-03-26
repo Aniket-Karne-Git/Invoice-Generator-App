@@ -42,18 +42,17 @@ const Navbar = () => {
         className={`${
           showSidebar
             ? "sm:hidden fixed w-36 bg-slate-800 bg-opacity-90 h-screen right-0 z-50 top-0 p-2 text-slate-50"
-            : ""
+            : " hidden sm:hidden fixed w-36 bg-slate-800 bg-opacity-90 h-screen right-0 z-50 top-0 p-2 text-slate-50"
         }`}
       >
         <div className="flex justify-between items-center mb-10">
           <h2 className="font-bold">Invoicer</h2>
-          <button>
-            <AiOutlineClose
-              className="text-2xl "
-              onClick={() => {
-                setShowSidebar(false);
-              }}
-            />
+          <button
+            onClick={() => {
+              setShowSidebar(false);
+            }}
+          >
+            <AiOutlineClose className="text-2xl " />
           </button>
         </div>
         <nav className="flex flex-col items-start gap-3 mb-10">
