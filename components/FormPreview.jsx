@@ -1,4 +1,6 @@
-import React from "react";
+import Image from "next/image";
+import PreviewTable from "./PreviewTable";
+import { CldImage } from "next-cloudinary";
 
 const FormPreview = ({ data }) => {
   const {
@@ -14,14 +16,101 @@ const FormPreview = ({ data }) => {
     invoiceNumber,
     invoiceDate,
     invoiceDueDate,
+    logoUrl,
+    tableData,
   } = data;
   return (
     <div className="w-full max-w-4xl p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-6 md:p-8 mx-auto">
-      <h2>"Company Name: "{invoiceAuthor}</h2>
-      <h2>"Contact Person: "{contactPerson}</h2>
-      <h2>"Company Address: "{companyAddress}</h2>
-      <h2>"Company City: "{companyCity}</h2>
-      <h2>"Company Country: "{companyCountry}</h2>
+      {/* Image and Invoice Label */}
+      <div className="flex justify-between items-center">
+        {/* Image */}
+
+        <div className="flex items-center justify-center">
+          {logoUrl && (
+            <CldImage
+              width="120"
+              height="120"
+              src={logoUrl}
+              alt="Invoice Logo"
+            />
+          )}
+        </div>
+
+        <h2 className="text-4xl uppercase font-semibold">Invoice</h2>
+      </div>
+
+      {/* Company Details */}
+      <div className="flex flex-col w-1/2 mt-6">
+        <div className="flex space-x-2">
+          <p className="font-bold text-base">Company Name: </p>
+          <p className="text-base">{invoiceAuthor}</p>
+        </div>
+
+        <div className="flex space-x-2">
+          <p className="font-bold text-base">Your Name: </p>
+          <p className="text-base">{contactPerson}</p>
+        </div>
+
+        <div className="flex space-x-2">
+          <p className="font-bold text-base">Company Address: </p>
+          <p className="text-base">{companyAddress}</p>
+        </div>
+
+        <div className="flex space-x-2">
+          <p className="font-bold text-base">Company City: </p>
+          <p className="text-base">{companyCity}</p>
+        </div>
+
+        <div className="flex space-x-2">
+          <p className="font-bold text-base">Company Country: </p>
+          <p className="text-base">{companyCountry}</p>
+        </div>
+      </div>
+
+      {/* Client Details */}
+      <div className="flex justify-between gap-4 mb-8">
+        <div className="flex flex-col w-1/2 mt-6">
+          <h2 className="mb-2 font-semibold">Bill to:</h2>
+
+          <div className="flex space-x-2">
+            <p className="font-bold text-base">Client Company: </p>
+            <p className="text-base">{clientCompany}</p>
+          </div>
+
+          <div className="flex space-x-2">
+            <p className="font-bold text-base">Client's Address: </p>
+            <p className="text-base">{clientAddress}</p>
+          </div>
+
+          <div className=" space-x-2">
+            <p className="font-bold text-base">Client's City: </p>
+            <p className="text-base">{clientCity}</p>
+          </div>
+
+          <div className="flex space-x-2">
+            <p className="font-bold text-base">Client's Country: </p>
+            <p className="text-base">{clientCountry}</p>
+          </div>
+        </div>
+        <div className="flex flex-col w-1/2 mt-6">
+          <div className="flex gap-2 space-x-2">
+            <p className="text-slate-500 font-bold">Invoice Number: </p>
+            <p className="font-bold text-base">{invoiceNumber}</p>
+          </div>
+
+          <div className="flex gap-2 space-x-2">
+            <p className="text-slate-500 font-bold">Invoice Date: </p>
+            <p className="font-bold text-base">{invoiceDate}</p>
+          </div>
+
+          <div className="flex gap-2 space-x-2">
+            <p className="text-slate-500 font-bold">Invoice Due Date: </p>
+            <p className="font-bold text-base">{invoiceDueDate}</p>
+          </div>
+        </div>
+      </div>
+      {/* Form Table */}
+      <PreviewTable tableData={tableData} />
     </div>
   );
 };

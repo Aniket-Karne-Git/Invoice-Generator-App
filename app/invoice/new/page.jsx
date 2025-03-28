@@ -2,6 +2,7 @@
 
 import FormPreview from "@/components/FormPreview";
 import FormTable from "@/components/FormTable";
+import { CldImage, CldUploadButton } from "next-cloudinary";
 import { useState } from "react";
 import {
   AiOutlineCloudDownload,
@@ -12,6 +13,7 @@ import { BsLayoutTextWindowReverse } from "react-icons/bs";
 import { CiMail } from "react-icons/ci";
 
 const createInvoice = () => {
+  const [logoUrl, setLogoUrl] = useState("");
   const [preview, setPreview] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -31,28 +33,28 @@ const createInvoice = () => {
 
   const [tableData, setTableData] = useState([]);
 
+  const [combinedData, setCombinedData] = useState({});
+
   function handleInputChange(e) {
     const { name, value } = e.target;
-    // console.log(name, value);
     setFormData({ ...formData, [name]: value });
-    // console.log(formData);
   }
   function handleFormSubmit(e) {
     e.preventDefault();
-    console.log(formData);
-    const combinedData = {
+
+    const allFormData = {
       ...formData,
+      logoUrl,
       tableData,
     };
-    console.log(combinedData);
 
+    setCombinedData(allFormData);
     setPreview(!preview);
   }
 
   const updateTableData = (newTableData) => {
     setTableData(newTableData);
   };
-  console.log(tableData);
 
   return (
     <div className="bg-slate-50 py-8 md:py-8 px-4 md:px-16">
@@ -110,7 +112,7 @@ const createInvoice = () => {
         </div>
       </div>
       {preview ? (
-        <FormPreview data={formData} />
+        <FormPreview data={combinedData} />
       ) : (
         <form
           onSubmit={handleFormSubmit}
@@ -121,21 +123,36 @@ const createInvoice = () => {
             {/* Image */}
 
             <div className="flex items-center justify-center">
-              <label
-                htmlFor="dropzone-file"
-                className="flex flex-col items-center justify-center w-48 h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
-              >
-                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <AiOutlineCloudUpload className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-                  <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                    <span className="font-semibold">Upload Logo</span>
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    PNG (MAX. 240x240px)
-                  </p>
-                </div>
-                <input id="dropzone-file" type="file" className="hidden" />
-              </label>
+              {logoUrl ? (
+                <CldImage
+                  width="240"
+                  height="240"
+                  src={logoUrl}
+                  alt="Invoice Logo"
+                />
+              ) : (
+                <label
+                  htmlFor="dropzone-file"
+                  className="flex flex-col items-center justify-center w-48 h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                >
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <AiOutlineCloudUpload className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                      <CldUploadButton
+                        onSuccess={(data) => {
+                          setLogoUrl(data.info.secure_url);
+                        }}
+                        className=""
+                        uploadPreset="InvoicePreset"
+                      />
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      PNG (MAX. 240x240px)
+                    </p>
+                  </div>
+                  {/* <input id="dropzone-file" type="file" className="hidden" /> */}
+                </label>
+              )}
             </div>
 
             <h2 className="text-4xl uppercase font-semibold">Invoice</h2>
