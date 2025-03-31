@@ -82,7 +82,7 @@ const FormPreview = ({ data }) => {
             <p className="text-base">{clientAddress}</p>
           </div>
 
-          <div className=" space-x-2">
+          <div className="flex space-x-2">
             <p className="font-bold text-base">Client's City: </p>
             <p className="text-base">{clientCity}</p>
           </div>

@@ -1,10 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import {
-  AiOutlineClose,
-  AiOutlineCloseCircle,
-  AiOutlinePlus,
-} from "react-icons/ai";
+import { AiOutlineCloseCircle, AiOutlinePlus } from "react-icons/ai";
 
 const FormTable = ({ updateTableData }) => {
   const [tableData, setTableData] = useState([
