@@ -1,4 +1,3 @@
-import Image from "next/image";
 import PreviewTable from "./PreviewTable";
 import { CldImage } from "next-cloudinary";
 

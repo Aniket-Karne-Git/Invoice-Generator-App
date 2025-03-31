@@ -3,7 +3,7 @@
 import FormPreview from "@/components/FormPreview";
 import FormTable from "@/components/FormTable";
 import { CldImage, CldUploadButton } from "next-cloudinary";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   AiOutlineCloudDownload,
   AiOutlineCloudUpload,
@@ -11,8 +11,11 @@ import {
 } from "react-icons/ai";
 import { BsLayoutTextWindowReverse } from "react-icons/bs";
 import { CiMail } from "react-icons/ci";
+import { useReactToPrint } from "react-to-print";
 
 const createInvoice = () => {
+  const invoiceRef = useRef();
+
   const [logoUrl, setLogoUrl] = useState("");
   const [preview, setPreview] = useState(false);
 
@@ -56,6 +59,10 @@ const createInvoice = () => {
     setTableData(newTableData);
   };
 
+  const handlePrint = useReactToPrint({
+    contentRef: invoiceRef,
+  });
+
   return (
     <div className="bg-slate-50 py-8 md:py-8 px-4 md:px-16">
       <div className="flex justify-between items-center mb-6">
@@ -83,17 +90,14 @@ const createInvoice = () => {
               </div>
             )}
           </button>
-          <button className="flex items-center space-x-2 px-3 py-2 rounded-sm border border-slate-600">
+          <button
+            onClick={() => handlePrint()}
+            className="flex items-center space-x-2 px-3 py-2 rounded-sm border border-slate-600"
+          >
             <span>
               <AiOutlinePrinter />
             </span>
-            <span>Print</span>
-          </button>
-          <button className="flex items-center space-x-2 px-3 py-2 rounded-sm border border-slate-600">
-            <span>
-              <AiOutlineCloudDownload />
-            </span>
-            <span>Download</span>
+            <span>Print/Download</span>
           </button>
         </div>
         <div className="flex gap-4 ">
@@ -112,7 +116,9 @@ const createInvoice = () => {
         </div>
       </div>
       {preview ? (
-        <FormPreview data={combinedData} />
+        <div ref={invoiceRef}>
+          <FormPreview data={combinedData} />
+        </div>
       ) : (
         <form
           onSubmit={handleFormSubmit}
@@ -131,27 +137,16 @@ const createInvoice = () => {
                   alt="Invoice Logo"
                 />
               ) : (
-                <label
-                  htmlFor="dropzone-file"
-                  className="flex flex-col items-center justify-center w-48 h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
-                >
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <AiOutlineCloudUpload className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                      <CldUploadButton
-                        onSuccess={(data) => {
-                          setLogoUrl(data.info.secure_url);
-                        }}
-                        className=""
-                        uploadPreset="InvoicePreset"
-                      />
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      PNG (MAX. 240x240px)
-                    </p>
-                  </div>
-                  {/* <input id="dropzone-file" type="file" className="hidden" /> */}
-                </label>
+                <div>
+                  <CldUploadButton
+                    className="flex flex-col items-center justify-center w-48 h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 text-sm text-gray-500 dark:text-gray-400"
+                    onSuccess={(data, { close }) => {
+                      setLogoUrl(data.info.secure_url);
+                      close();
+                    }}
+                    uploadPreset="InvoicePreset"
+                  />
+                </div>
               )}
             </div>
 

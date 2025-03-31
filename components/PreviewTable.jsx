@@ -1,9 +1,8 @@
-import React from "react";
-
 const PreviewTable = ({ tableData }) => {
-  const totalSum = tableData?.reduce((currentItem, nextItem) => {
-    return parseFloat(currentItem.amount) + parseFloat(nextItem.amount);
-  });
+  const totalSum = tableData?.reduce((acc, row) => {
+    return acc + parseFloat(row.amount || 0);
+  }, 0);
+
   return (
     <div className="relative overflow-x-auto">
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -57,7 +56,8 @@ const PreviewTable = ({ tableData }) => {
               Total Amount
             </td>
             <td className="px-6 py-4 text-base font-bold text-slate-900">
-              ${totalSum}
+              ${isNaN(totalSum) ? "0.00" : totalSum.toFixed(2)}{" "}
+              {/* Safeguard for NaN */}
             </td>
           </tr>
         </tbody>
