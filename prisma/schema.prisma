@@ -28,6 +28,8 @@ model Invoice {
   invoiceNumber  String
   invoiceDate    DateTime
   invoiceDueDate DateTime
+  notes          String
+  terms          String
   logoUrl        String
   tableData      Row[] // Define a one-to-many relationship to Row
 }

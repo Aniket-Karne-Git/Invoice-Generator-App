@@ -15,6 +15,8 @@ const FormPreview = ({ data }) => {
     invoiceNumber,
     invoiceDate,
     invoiceDueDate,
+    notes,
+    terms,
     logoUrl,
     tableData,
   } = data;
@@ -110,6 +112,26 @@ const FormPreview = ({ data }) => {
       </div>
       {/* Form Table */}
       <PreviewTable tableData={tableData} />
+      <div className="flex flex-col w-full my-6">
+        <p className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+          Notes
+        </p>
+        <p>{notes}</p>
+      </div>
+      <div className="flex flex-col w-full my-6">
+        <p className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+          Terms and Conditions
+        </p>
+        <p>{terms}</p>
+      </div>
+      <div className="mt-12 flex justify-end">
+        <h2 className="text-sm">
+          Powered by {""}
+          <a className="font-bold text-pink-600" href="#">
+            Paktolus
+          </a>
+        </h2>
+      </div>
     </div>
   );
 };

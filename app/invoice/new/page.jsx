@@ -32,6 +32,8 @@ const createInvoice = () => {
     invoiceNumber: "",
     invoiceDate: "",
     invoiceDueDate: "",
+    notes: "",
+    terms: "",
   });
 
   const [tableData, setTableData] = useState([]);
@@ -284,6 +286,40 @@ const createInvoice = () => {
           </div>
           {/* Form Table */}
           <FormTable updateTableData={updateTableData} />
+          <div className="flex flex-col w-full my-6">
+            <label
+              htmlFor="notes"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
+              Notes
+            </label>
+            <textarea
+              name="notes"
+              id="notes"
+              rows="2"
+              onChange={handleInputChange}
+              value={formData.notes}
+              className="block p-2.5 w-full text-sm text-gray-900 bg-gray-transparent rounded-lg border-0 focus:ring-blue-500 focus:border-blur-500"
+              placeholder="Write your notes here..."
+            ></textarea>
+          </div>
+          <div className="flex flex-col w-full my-6">
+            <label
+              htmlFor="terms"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
+              Terms and Conditions
+            </label>
+            <textarea
+              name="terms"
+              id="terms"
+              rows="2"
+              onChange={handleInputChange}
+              value={formData.terms}
+              className="block p-2.5 w-full text-sm text-gray-900 bg-gray-transparent rounded-lg border-0 focus:ring-blue-500 focus:border-blur-500"
+              placeholder="Write your terms and conditions here..."
+            ></textarea>
+          </div>
           <button
             className="bg-purple-600 py-2.5 px-6 text-white rounded"
             type="submit"
