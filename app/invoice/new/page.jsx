@@ -20,8 +20,8 @@ const createInvoice = () => {
   const [preview, setPreview] = useState(false);
 
   const [formData, setFormData] = useState({
-    invoiceAuthor: "",
-    contactPerson: "  ",
+    companyName: "",
+    invoiceAuthor: "  ",
     companyAddress: "",
     companyCity: "",
     companyCountry: "",
@@ -44,7 +44,7 @@ const createInvoice = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   }
-  function handleFormSubmit(e) {
+  async function handleFormSubmit(e) {
     e.preventDefault();
 
     const allFormData = {
@@ -54,6 +54,31 @@ const createInvoice = () => {
     };
 
     setCombinedData(allFormData);
+    try {
+      const response = await fetch("http://localhost:3000/api/invoice", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          invoiceData: {
+            ...formData,
+            logoUrl,
+          },
+          tableData,
+        }),
+      });
+      if (response.ok) {
+        // console.log(response);
+        console.log(combinedData);
+        setPreview(!preview);
+      } else {
+        console.log("Something went wrong");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
     setPreview(!preview);
   }
 
@@ -161,17 +186,17 @@ const createInvoice = () => {
               className="h-7 text-base p-2 mb-2 placeholder:text-slate-400"
               type="text"
               placeholder="Your Company"
-              name="invoiceAuthor"
+              name="companyName"
               onChange={handleInputChange}
-              value={formData.invoiceAuthor}
+              value={formData.companyName}
             />
             <input
               className="h-7 text-base p-2 mb-2 placeholder:text-slate-400"
               type="text"
               placeholder="Your Name"
-              name="contactPerson"
+              name="invoiceAuthor"
               onChange={handleInputChange}
-              value={formData.contactPerson}
+              value={formData.invoiceAuthor}
             />
             <input
               className="h-7 text-base p-2 mb-2 placeholder:text-slate-400"

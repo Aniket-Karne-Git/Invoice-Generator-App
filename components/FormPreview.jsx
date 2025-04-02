@@ -3,8 +3,8 @@ import { CldImage } from "next-cloudinary";
 
 const FormPreview = ({ data }) => {
   const {
+    companyName,
     invoiceAuthor,
-    contactPerson,
     companyAddress,
     companyCity,
     companyCountry,
@@ -44,12 +44,12 @@ const FormPreview = ({ data }) => {
       <div className="flex flex-col w-1/2 mt-6">
         <div className="flex space-x-2">
           <p className="font-bold text-base">Company Name: </p>
-          <p className="text-base">{invoiceAuthor}</p>
+          <p className="text-base">{companyName}</p>
         </div>
 
         <div className="flex space-x-2">
           <p className="font-bold text-base">Your Name: </p>
-          <p className="text-base">{contactPerson}</p>
+          <p className="text-base">{invoiceAuthor}</p>
         </div>
 
         <div className="flex space-x-2">
