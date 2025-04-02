@@ -63,3 +63,26 @@ export async function POST(request) {
     );
   }
 }
+
+export async function GET(request) {
+  try {
+    const invoices = await db.invoice.findMany({
+      include: {
+        tableData: true,
+      },
+    });
+    console.log(invoices);
+    return NextResponse.json(invoices);
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      {
+        message: "Failed to fetch invoices",
+        error,
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}
