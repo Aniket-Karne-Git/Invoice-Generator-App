@@ -1,3 +1,4 @@
+"use client";
 import PreviewTable from "./PreviewTable";
 import { CldImage } from "next-cloudinary";
 
@@ -20,6 +21,17 @@ const FormPreview = ({ data }) => {
     logoUrl,
     tableData,
   } = data;
+
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  const newInvoiceDate = new Date(invoiceDate).toLocaleDateString(
+    undefined,
+    options
+  );
+  const newInvoiceDueDate = new Date(invoiceDueDate).toLocaleDateString(
+    undefined,
+    options
+  );
+
   return (
     <div className="w-full max-w-4xl p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-6 md:p-8 mx-auto">
       {/* Image and Invoice Label */}
@@ -101,11 +113,13 @@ const FormPreview = ({ data }) => {
 
           <div className="flex gap-2 space-x-2">
             <p className="text-slate-500 font-bold">Invoice Date: </p>
+            {/* <p className="font-bold text-base">{newInvoiceDate}</p> */}
             <p className="font-bold text-base">{invoiceDate}</p>
           </div>
 
           <div className="flex gap-2 space-x-2">
             <p className="text-slate-500 font-bold">Invoice Due Date: </p>
+            {/* <p className="font-bold text-base">{newInvoiceDueDate}</p> */}
             <p className="font-bold text-base">{invoiceDueDate}</p>
           </div>
         </div>

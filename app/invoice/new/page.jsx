@@ -120,6 +120,8 @@ const createInvoice = () => {
               </div>
             )}
           </button>
+        </div>
+        <div className="flex gap-4 ">
           <button
             onClick={() => handlePrint()}
             className="flex items-center space-x-2 px-3 py-2 rounded-sm border border-slate-600"
@@ -128,20 +130,6 @@ const createInvoice = () => {
               <AiOutlinePrinter />
             </span>
             <span>Print/Download</span>
-          </button>
-        </div>
-        <div className="flex gap-4 ">
-          <button className="flex text-purple-600 font-semibold items-center space-x-2 px-3 py-2 rounded-sm border border-purple-600">
-            <span>
-              <AiOutlineCloudUpload />
-            </span>
-            <span>Save Online</span>
-          </button>
-          <button className="flex text-purple-600 font-semibold items-center space-x-2 px-3 py-2 rounded-sm border border-purple-600">
-            <span>
-              <CiMail />
-            </span>
-            <span>Send</span>
           </button>
         </div>
       </div>
