@@ -32,6 +32,8 @@ model Invoice {
   terms          String
   logoUrl        String
   tableData      Row[] // Define a one-to-many relationship to Row
+  User           User     @relation(fields: [userId], references: [email])
+  userId         String
 }
 
 model Row {
@@ -43,4 +45,14 @@ model Row {
   amount          Float
   invoiceId       Int // Define a foreign key relationship to Invoice
   invoice         Invoice @relation(fields: [invoiceId], references: [id])
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  name      String?
+  password  String
+  invoices  Invoice[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }

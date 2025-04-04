@@ -4,9 +4,12 @@ import { NextResponse } from "next/server";
 export async function POST(request) {
   try {
     const { invoiceData, tableData } = await request.json();
+    console.log(invoiceData);
     // Create the Invoice record
+    console.log(invoiceData.userId);
     const invoice = await db.invoice.create({
       data: {
+        userId: invoiceData.userId,
         companyName: invoiceData.companyName,
         invoiceAuthor: invoiceData.invoiceAuthor,
         companyAddress: invoiceData.companyAddress,
@@ -39,19 +42,14 @@ export async function POST(request) {
     });
     // Use Promise.all to await all row creation promises
     const rows = await Promise.all(rowPromises);
-    console.log(invoice, rows);
-    return NextResponse.json(
-      {
-        invoice,
-        rows,
-      },
-      {
-        status: 201,
-      }
-    );
+    const data = {
+      invoice,
+      rows,
+    };
+    // console.log(invoice);
+    return NextResponse.json(invoiceData);
   } catch (error) {
     console.log(error);
-
     return NextResponse.json(
       {
         error,

@@ -1,29 +1,33 @@
 "use client";
-
 import FormPreview from "@/components/FormPreview";
 import FormTable from "@/components/FormTable";
+import { useReactToPrint } from "react-to-print";
 import { CldImage, CldUploadButton } from "next-cloudinary";
-import { useState, useRef } from "react";
-import toast from "react-hot-toast";
+import { useRef, useState } from "react";
 import {
   AiOutlineCloudDownload,
-  AiOutlineCloudUpload,
   AiOutlinePrinter,
+  AiOutlineCloudUpload,
+  AiOutlineFileText,
 } from "react-icons/ai";
 import { BsLayoutTextWindowReverse } from "react-icons/bs";
 import { CiMail } from "react-icons/ci";
-import { useReactToPrint } from "react-to-print";
-
-const createInvoice = () => {
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import Loading from "@/app/loading";
+import ThemeLink from "@/components/ThemeLink";
+import Link from "next/link";
+export default function CreateInvoice() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const invoiceRef = useRef();
-
   const [logoUrl, setLogoUrl] = useState("");
   const [preview, setPreview] = useState(false);
-
   const [formData, setFormData] = useState({
     companyName: "",
-    invoiceAuthor: "  ",
+    invoiceAuthor: "",
     companyAddress: "",
     companyCity: "",
     companyCountry: "",
@@ -34,94 +38,114 @@ const createInvoice = () => {
     invoiceNumber: "",
     invoiceDate: "",
     invoiceDueDate: "",
-    notes: "",
     terms: "",
+    notes: "",
   });
-
   const [tableData, setTableData] = useState([]);
-
   const [combinedData, setCombinedData] = useState({});
-
   function handleInputChange(e) {
     const { name, value } = e.target;
+    // console.log(name, value);
     setFormData({ ...formData, [name]: value });
+    // console.log(formData);
   }
   async function handleFormSubmit(e) {
-    setLoading(true);
+    const userId =  session?.user?.email;
     e.preventDefault();
-
+    console.log(formData);
     const allFormData = {
       ...formData,
       logoUrl,
+      userId,
       tableData,
     };
-
     setCombinedData(allFormData);
+
     try {
+      setLoading(true);
       const response = await fetch("http://localhost:3000/api/invoice", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          invoiceData: {
-            ...formData,
-            logoUrl,
-          },
+          invoiceData: { ...formData, logoUrl, userId },
           tableData,
         }),
       });
-      if (response.ok) {
-        setLoading(false);
-        toast.success("Invoice Created.");
-        setPreview(!preview);
-      } else {
-        console.log("Something went wrong");
-      }
+      const createdInvoice = await response.json();
+      console.log(createdInvoice);
+      setLoading(false);
+      toast.success("Invoice Created");
+      // router.push("/invoice");
+      setPreview(!preview);
     } catch (error) {
+      setLoading(false);
       console.log(error);
     }
-
-    setPreview(!preview);
   }
+  console.log(combinedData);
 
-  const updateTableData = (newTableData) => {
+  function updateTableData(newTableData) {
     setTableData(newTableData);
-  };
+  }
 
   const handlePrint = useReactToPrint({
     contentRef: invoiceRef,
   });
 
+  console.log(tableData);
+
+  if (status === "loading") {
+    return <Loading />;
+  }
+  if (status === "unauthenticated") {
+    return (
+      <div className="gap-8 flex items-center h-screen justify-center flex-col">
+        <h2 className="md:text-4xl text-2xl">
+          Please Login to be able to create your first Invoice
+        </h2>
+        <ThemeLink
+          className="bg-rose-600 hover:bg-rose-700 focus:ring-rose-300"
+          title="Click here to Login to your Account"
+          href="/login"
+        />
+      </div>
+    );
+  }
   return (
     <div className="bg-slate-50 py-8 md:py-8 px-4 md:px-16">
-      <div className="flex justify-between items-center mb-6">
-        {/* Header */}
+      {/* HEADER */}
+      <div className="flex justify-between items-center mb-6 ">
+        {/* HEADER */}
         <div className="flex gap-4">
           <button
-            className="flex items-center space-x-2 px-3 py-2 rounded-sm border border-slate-600"
-            onClick={() => {
-              setPreview(!preview);
-            }}
+            onClick={() => setPreview(!preview)}
+            className=" px-3 py-2  rounded-sm  border border-slate-600 "
           >
             {preview ? (
               <div className="flex items-center space-x-2">
-                <span>
-                  <BsLayoutTextWindowReverse />
-                </span>
+                <BsLayoutTextWindowReverse />
                 <span>Edit Form</span>
               </div>
             ) : (
               <div className="flex items-center space-x-2">
-                <span>
-                  <BsLayoutTextWindowReverse />
-                </span>
+                <BsLayoutTextWindowReverse />
                 <span>Preview</span>
               </div>
             )}
           </button>
         </div>
         <div className="flex gap-4 ">
+        <Link
+            href="/invoice"
+            className="flex items-center space-x-2 px-3 py-2 rounded-sm border border-slate-600"
+          >
+            <span>
+              <AiOutlineFileText />
+            </span>
+            <span>View Invoice</span>
+          </Link>
           <button
             onClick={() => handlePrint()}
             className="flex items-center space-x-2 px-3 py-2 rounded-sm border border-slate-600"
@@ -133,6 +157,9 @@ const createInvoice = () => {
           </button>
         </div>
       </div>
+
+      {/* INVOICE FORM */}
+
       {preview ? (
         <div ref={invoiceRef}>
           <FormPreview data={combinedData} />
@@ -140,13 +167,13 @@ const createInvoice = () => {
       ) : (
         <form
           onSubmit={handleFormSubmit}
-          className="w-full max-w-4xl p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-6 md:p-8 mx-auto"
+          className="w-full max-w-4xl p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 mx-auto"
         >
-          {/* Image and Invoice Label */}
+          {/* Image & Invoice Label */}
           <div className="flex justify-between items-center">
             {/* Image */}
 
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center ">
               {logoUrl ? (
                 <CldImage
                   width="240"
@@ -170,11 +197,10 @@ const createInvoice = () => {
 
             <h2 className="text-4xl uppercase font-semibold">Invoice</h2>
           </div>
-
           {/* Company Details */}
           <div className="flex flex-col w-1/2 mt-6">
             <input
-              className="h-7 text-base p-2 mb-2 placeholder:text-slate-400"
+              className="h-7 text-base border-0 p-1 mb-2 placeholder:text-slate-400 "
               type="text"
               placeholder="Your Company"
               name="companyName"
@@ -182,7 +208,7 @@ const createInvoice = () => {
               value={formData.companyName}
             />
             <input
-              className="h-7 text-base p-2 mb-2 placeholder:text-slate-400"
+              className="text-base border-0 p-1 mb-2 h-7 placeholder:text-slate-400"
               type="text"
               placeholder="Your Name"
               name="invoiceAuthor"
@@ -190,7 +216,7 @@ const createInvoice = () => {
               value={formData.invoiceAuthor}
             />
             <input
-              className="h-7 text-base p-2 mb-2 placeholder:text-slate-400"
+              className="text-base border-0 p-1 mb-2 h-7 placeholder:text-slate-400"
               type="text"
               placeholder="Company Address"
               name="companyAddress"
@@ -198,29 +224,28 @@ const createInvoice = () => {
               value={formData.companyAddress}
             />
             <input
-              className="h-7 text-base p-2 mb-2 placeholder:text-slate-400"
+              className="h-7 text-base border-0 p-1 mb-2 placeholder:text-slate-400"
               type="text"
-              placeholder="City, State, Zip"
+              placeholder="City,State zip"
               name="companyCity"
               onChange={handleInputChange}
               value={formData.companyCity}
             />
             <input
-              className="h-7 text-base p-2 mb-2 placeholder:text-slate-400"
+              className="h-7 text-base border-0 p-1 mb-2 placeholder:text-slate-400"
               type="text"
-              placeholder="Country"
+              placeholder="Country eg USA"
               name="companyCountry"
               onChange={handleInputChange}
               value={formData.companyCountry}
             />
           </div>
-
-          {/* Client Details */}
+          {/* CLIENT dETAILS */}
           <div className="flex justify-between gap-4">
             <div className="flex flex-col w-1/2 mt-6">
-              <h2 className="mb-2 font-semibold">Bill to:</h2>
+              <h2 className="mb-2 font-semibold">Bill To</h2>
               <input
-                className="h-7 text-base p-2 mb-2 placeholder:text-slate-400"
+                className="text-base border-0 p-1 mb-2 h-7 placeholder:text-slate-400"
                 type="text"
                 placeholder="Your Client's Company"
                 name="clientCompany"
@@ -228,7 +253,7 @@ const createInvoice = () => {
                 value={formData.clientCompany}
               />
               <input
-                className="h-7 text-base p-2 mb-2 placeholder:text-slate-400"
+                className="text-base border-0 p-1 mb-2 h-7 placeholder:text-slate-400"
                 type="text"
                 placeholder="Client's Address"
                 name="clientAddress"
@@ -236,15 +261,15 @@ const createInvoice = () => {
                 value={formData.clientAddress}
               />
               <input
-                className="h-7 text-base p-2 mb-2 placeholder:text-slate-400"
+                className="h-7 text-base border-0 p-1 mb-2 placeholder:text-slate-400"
                 type="text"
-                placeholder="City, State, Zip"
+                placeholder="City,State zip"
                 name="clientCity"
                 onChange={handleInputChange}
                 value={formData.clientCity}
               />
               <input
-                className="h-7 text-base p-2 mb-2 placeholder:text-slate-400"
+                className="h-7 text-base border-0 p-1 mb-2 placeholder:text-slate-400"
                 type="text"
                 placeholder="Country eg USA"
                 name="clientCountry"
@@ -261,7 +286,7 @@ const createInvoice = () => {
                   Invoice #
                 </label>
                 <input
-                  className="h-7 text-base p-2 mb-2 placeholder:text-slate-400"
+                  className="text-base border-0 p-1 mb-2 h-7 placeholder:text-slate-400"
                   type="text"
                   placeholder="INV-202"
                   name="invoiceNumber"
@@ -269,29 +294,27 @@ const createInvoice = () => {
                   value={formData.invoiceNumber}
                 />
               </div>
-
               <div className="flex gap-2">
                 <label
                   className="text-slate-500 font-bold"
-                  htmlFor="InvoiceDate"
+                  htmlFor="invoiceDate"
                 >
                   Invoice Date #
                 </label>
                 <input
-                  className="h-7 text-base p-2 mb-2 placeholder:text-slate-400"
+                  className="text-base border-0 p-1 mb-2 h-7 placeholder:text-slate-400"
                   type="date"
                   name="invoiceDate"
                   onChange={handleInputChange}
                   value={formData.invoiceDate}
                 />
               </div>
-
               <div className="flex gap-2">
                 <label className="text-slate-500 font-bold" htmlFor="dueDate">
                   Due Date #
                 </label>
                 <input
-                  className="h-7 text-base p-2 mb-2 placeholder:text-slate-400"
+                  className="text-base border-0 p-1 mb-2 h-7 placeholder:text-slate-400"
                   type="date"
                   name="invoiceDueDate"
                   onChange={handleInputChange}
@@ -300,7 +323,7 @@ const createInvoice = () => {
               </div>
             </div>
           </div>
-          {/* Form Table */}
+          {/* TABLE */}
           <FormTable updateTableData={updateTableData} />
           <div className="flex flex-col w-full my-6">
             <label
@@ -310,12 +333,13 @@ const createInvoice = () => {
               Notes
             </label>
             <textarea
-              name="notes"
               id="notes"
               rows="2"
+              name="notes"
               onChange={handleInputChange}
               value={formData.notes}
-              className="block p-2.5 w-full text-sm text-gray-900 bg-gray-transparent rounded-lg border-0 focus:ring-blue-500 focus:border-blur-500"
+              className="block p-2.5 w-full text-sm text-gray-900 bg-gray-transparent rounded-lg 
+              border-0 focus:ring-blue-500 focus:border-blue-500  "
               placeholder="Write your notes here..."
             ></textarea>
           </div>
@@ -327,25 +351,27 @@ const createInvoice = () => {
               Terms and Conditions
             </label>
             <textarea
-              name="terms"
               id="terms"
               rows="2"
+              name="terms"
               onChange={handleInputChange}
               value={formData.terms}
-              className="block p-2.5 w-full text-sm text-gray-900 bg-gray-transparent rounded-lg border-0 focus:ring-blue-500 focus:border-blur-500"
+              className="block p-2.5 w-full text-sm text-gray-900 bg-gray-transparent rounded-lg 
+              border-0 focus:ring-blue-500 focus:border-blue-500  "
               placeholder="Write your terms and conditions here..."
             ></textarea>
           </div>
+
           {loading ? (
             <button
               disabled
               type="button"
-              className="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800 inline-flex items-center"
+              className="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800 inline-flex items-center"
             >
               <svg
                 aria-hidden="true"
                 role="status"
-                className="inline w-4 h-4 me-3 text-white animate-spin"
+                className="inline w-4 h-4 mr-3 text-white animate-spin"
                 viewBox="0 0 100 101"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -371,8 +397,8 @@ const createInvoice = () => {
           )}
         </form>
       )}
+
+      {/* INVOICE PREVIEW */}
     </div>
   );
-};
-
-export default createInvoice;
+}

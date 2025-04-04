@@ -46,17 +46,7 @@ const ActionButtons = ({ invoiceId }) => {
   return (
     <div className="container mx-auto py-4 px-8 flex justify-between items-center mb-6">
       {/* Header */}
-      <div className="flex gap-4 items-center">
-        <button
-          //   onClick={() => handlePrint()}
-          className="flex items-center space-x-2 px-3 py-2 rounded-sm border border-slate-600"
-        >
-          <span>
-            <AiOutlinePrinter />
-          </span>
-          <span>Print/Download</span>
-        </button>
-      </div>
+      <div className="flex gap-4 items-center"></div>
       <div className="flex gap-4 ">
         {sendMail ? (
           <form onSubmit={handleSendMail} className="flex items-center gap-4">
